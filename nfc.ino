@@ -10,20 +10,20 @@ LiquidCrystal_I2C lcd(0x27, 20, 4);
 Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET);
 
 int buzzer = 8;
-int buttonback = 2;
-int buttonselect = 3;
-int buttonnext = 4;
-int sttsbtnback = LOW;
-int sttsbtnbacklast = LOW;
-int clickCount = 0;
+int buttonback = 3;
+int buttonselect = 4;
+int buttonnext = 5;
 
+int option = 0;
+uint8_t buttonback_status;
+uint8_t buttonselect_status;
+uint8_t buttonnext_status;
+int linha_selecionada;
 
-
-String linhas[] = { "1967 - DANTAS BARRETO", "064 - PIEDADE OPCIONAL", "1980 - CID. TABAJARA/IGARASSU" };
-
+String linhas[] = { "DANTAS BARRETO", "PIEDADE OPCIONAL", "CID. TABAJARA" };
 
 void setup(void) {
-  Serial.begin(115200);
+  Serial.begin(9600);
   nfc.begin();
   pinMode(buzzer, OUTPUT);
 
@@ -34,8 +34,7 @@ void setup(void) {
   uint32_t versiondata = nfc.getFirmwareVersion();
   if (!versiondata) {
     Serial.print("Não encontrei a placa PN53x");
-    while (1)
-      ;
+    while (1);
   }
   Serial.print("Encontrei o PN5");
   Serial.println((versiondata >> 24) & 0xFF, HEX);
@@ -55,13 +54,6 @@ void loop(void) {
   uint8_t pcard[] = { 0x7D, 0xC6, 0x7C, 0x89 };
   uint8_t uidLength;
   bool igual = true;
-  
-  sttsbtnback = digitalRead(buttonback);
-  if(sttsbtnback == HIGH && sttsbtnbacklast == LOW){
-    clickCount++;
-    Serial.print(clickCount);
-  }
-  
 
   success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
   if (success) {
@@ -82,8 +74,8 @@ void loop(void) {
       selecionar();
     }
     delay(2000);
-
     lcd.noBacklight();
+    lcd.clear();
     igual = true;
     Serial.read();
     Serial.flush();
@@ -91,37 +83,49 @@ void loop(void) {
 }
 
 void selecionar() {
-  int option = 0;
-  while (true) {
+  option;
+  buttonback_status;
+  buttonselect_status;
+  buttonnext_status;
+  lcd.backlight();
+  lcd.setCursor(5, 0);
+  lcd.print("Bem-Vindo");
+  lcd.setCursor(6, 1);
+  lcd.print("Usuario");
+  lcd.setCursor(0, 2);
+  lcd.print("Selecione Sua Linha");
+  lcd.setCursor(0, 3);
+  delay(3000);
 
-    lcd.backlight();
+  while (true) {
+    delay(500);
+    lcd.clear();
     lcd.setCursor(5, 0);
-    lcd.print("Bem-Vindo");
-    lcd.setCursor(6, 1);
-    lcd.print("Usuario");
-    lcd.setCursor(0, 2);
-    lcd.print("Selecione Sua Linha");
-    lcd.setCursor(9, 3);
-    delay(3000);
-    
+    lcd.print("Linha:");
+    lcd.setCursor(3, 1);
     lcd.print(linhas[option]);
 
-    /*if (buttonStateBack == HIGH) {
+    linha_selecionada;
+    buttonback_status = digitalRead(buttonback);
+    buttonselect_status = digitalRead(buttonselect);
+    buttonnext_status = digitalRead(buttonnext);
+    if (buttonback_status == HIGH) {
       if (option != 0) {
         option -= 1;
       }
     }
-    if (buttonStateNext == HIGH) {
-      if (option != 3) {
+    if (buttonnext_status == HIGH) {
+      if (option != 2) {
         option += 1;
       }
     }
-    if (buttonStateSelect == HIGH) {
+    if (buttonselect_status == HIGH) {
+      linha_selecionada = option;
       lcd.clear();
-      lcd.setCursor(1, 1);
+      lcd.setCursor(1, 0);
       lcd.print("Linha Selecionada!");
+      Serial.print(linha_selecionada);
       break;
     }
-    */
   }
 }
