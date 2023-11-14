@@ -15,9 +15,6 @@ int buttonselect = 4;
 int buttonnext = 5;
 
 int option = 0;
-uint8_t buttonback_status;
-uint8_t buttonselect_status;
-uint8_t buttonnext_status;
 int linha_selecionada;
 
 String linhas[] = { "DANTAS BARRETO", "PIEDADE OPCIONAL", "CID. TABAJARA" };
@@ -83,10 +80,6 @@ void loop(void) {
 }
 
 void selecionar() {
-  option;
-  buttonback_status;
-  buttonselect_status;
-  buttonnext_status;
   lcd.backlight();
   lcd.setCursor(5, 0);
   lcd.print("Bem-Vindo");
@@ -105,21 +98,25 @@ void selecionar() {
     lcd.setCursor(3, 1);
     lcd.print(linhas[option]);
 
-    linha_selecionada;
-    buttonback_status = digitalRead(buttonback);
-    buttonselect_status = digitalRead(buttonselect);
-    buttonnext_status = digitalRead(buttonnext);
-    if (buttonback_status == HIGH) {
+    if (digitalRead(buttonback) == HIGH) {
+      while (digitalRead(buttonback) == HIGH) {}
       if (option != 0) {
-        option -= 1;
+        Serial.print("back: ");
+        Serial.println(option);
+        option--;
       }
     }
-    if (buttonnext_status == HIGH) {
+    if (digitalRead(buttonnext) == HIGH) {
+      while (digitalRead(buttonnext) == HIGH) {}
       if (option != 2) {
-        option += 1;
+        Serial.print("next: ");
+        Serial.println(option);
+        option++;
       }
     }
-    if (buttonselect_status == HIGH) {
+    if (digitalRead(buttonselect) == HIGH) {
+      while (digitalRead(buttonselect) == HIGH) {}
+      Serial.print("select: ");
       linha_selecionada = option;
       lcd.clear();
       lcd.setCursor(1, 0);
