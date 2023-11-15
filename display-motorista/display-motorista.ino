@@ -1,7 +1,7 @@
 #include <SoftwareSerial.h>
 #include <LiquidCrystal_I2C.h>
 
-LiquidCrystal_I2C lcd(0x27, 20, 4);
+LiquidCrystal_I2C lcd(???, 16, 2);
 SoftwareSerial mySerial(0,1);
 
 int data;
