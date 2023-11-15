@@ -2,12 +2,14 @@
 #include <SPI.h>
 #include <Adafruit_PN532.h>
 #include <LiquidCrystal_I2C.h>
+#include <SoftwareSerial.h>
 
 #define PN532_IRQ (2)
 #define PN532_RESET (3)
 
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET);
+SoftwareSerial mySerial(0,1);
 
 int buzzer = 8;
 int buttonback = 3;
@@ -17,10 +19,11 @@ int buttonnext = 5;
 int option = 0;
 int linha_selecionada;
 
-String linhas[] = { "DANTAS BARRETO", "PIEDADE OPCIONAL", "CID. TABAJARA" };
+String linhas[] = { "DANTAS BARRETO", "PIEDADE OPCIONAL", "RIO DOCE - CDU" };
 
 void setup(void) {
   Serial.begin(9600);
+  mySerial.begin(9600);
   nfc.begin();
   pinMode(buzzer, OUTPUT);
 
@@ -122,6 +125,7 @@ void selecionar() {
       lcd.setCursor(1, 0);
       lcd.print("Linha Selecionada!");
       Serial.print(linha_selecionada);
+      mySerial.write(linha_selecionada);
       break;
     }
   }
