@@ -25,5 +25,6 @@ void loop() {
       lcd.clear();
       lcd.noBacklight();
       mySerial.end();
+    mySerial.begin(9600);
   }
 }
