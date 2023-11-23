@@ -8,3 +8,4 @@ O projeto consiste em um cartão para auxiliar PCD's no acesso ao transporte pú
 - Ao escolher sua linha, o respectivo ônibus receberá um sinal de que há um PCD na parada antecipadamente.
 
 ## Documentação
+- [Esquemático](https://github.com/seconds4decay/Projeto-G8/blob/main/docs/Sketch.png)
