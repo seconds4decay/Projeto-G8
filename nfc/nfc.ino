@@ -52,6 +52,7 @@
     uint8_t success;
     uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };
     uint8_t pcard[] = { 0x7D, 0xC6, 0x7C, 0x89 };
+    uint8_t pcphone[] = { 0x91, 0x38, 0x50, 0xD3 };
     uint8_t uidLength;
     bool igual = true;
 
@@ -65,7 +66,7 @@
       nfc.PrintHex(uid, uidLength);
       Serial.println("");
       for (int x = 0; x < 4; x++) {
-        if (uid[x] != pcard[x]) igual = false;
+        if (uid[x] != pcard[x] && uid[x] != pcphone[x]) igual = false;
       }
       if (igual) {
         tone(8, 392);
@@ -98,6 +99,8 @@
     lcd.print("Selecione Sua Linha");
     lcd.setCursor(0, 3);
     delay(3000);
+    atualizar();
+
 
     while (true) {
 
