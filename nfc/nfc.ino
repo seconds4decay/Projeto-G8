@@ -81,7 +81,13 @@
       Serial.flush();
     }
   }
-
+  void atualizar() {
+    lcd.clear();
+    lcd.setCursor(5, 0);
+    lcd.print("Linha:");
+    lcd.setCursor(3, 1);
+    lcd.print(linhas[option]);
+  }
   void selecionar() {
     lcd.backlight();
     lcd.setCursor(5, 0);
@@ -94,12 +100,6 @@
     delay(3000);
 
     while (true) {
-      delay(500);
-      lcd.clear();
-      lcd.setCursor(5, 0);
-      lcd.print("Linha:");
-      lcd.setCursor(3, 1);
-      lcd.print(linhas[option]);
 
       if (digitalRead(buttonback) == HIGH) {
         while (digitalRead(buttonback) == HIGH) {}
@@ -107,6 +107,7 @@
           Serial.print("back: ");
           Serial.println(option);
           option--;
+          atualizar();
         }
       }
       if (digitalRead(buttonnext) == HIGH) {
@@ -115,6 +116,7 @@
           Serial.print("next: ");
           Serial.println(option);
           option++;
+          atualizar();
         }
       }
       if (digitalRead(buttonselect) == HIGH) {
