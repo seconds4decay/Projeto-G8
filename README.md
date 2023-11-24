@@ -14,3 +14,4 @@ O projeto consiste em um cartão para auxiliar PCD's no acesso ao transporte pú
 
 ## Documentação
 - [Esquemático](https://github.com/seconds4decay/Projeto-G8/blob/main/docs/Sketch.png)
+- [Artigo Tutorial.pdf](https://github.com/seconds4decay/Projeto-G8/files/13460605/Artigo.Tutorial.pdf)
