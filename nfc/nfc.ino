@@ -7,9 +7,9 @@
   #define PN532_IRQ (2)
   #define PN532_RESET (3)
 
-  LiquidCrystal_I2C lcd(0x27, 20, 4);
-  Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET);
-  SoftwareSerial mySerial(9,10);
+  LiquidCrystal_I2C lcd(0x27, 20, 4); // Configurações da Tela LCD
+  Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET); // Configurações da Placa PN532
+  SoftwareSerial mySerial(9,10); // Configurações da Comunicação Serial entre os dois arduinos
 
   int buzzer = 8;
   int buttonback = 3;
@@ -19,33 +19,30 @@
   int option = 0;
   int linha_selecionada;
 
-  String linhas[] = { "DANTAS BARRETO", "PIEDADE OPCIONAL", "RIO DOCE - CDU" };
+  String linhas[] = { "DANTAS BARRETO", "PIEDADE OPCIONAL", "RIO DOCE - CDU" }; // Linhas de onibus da parada
 
   void setup(void) {
-    Serial.begin(9600);
-    mySerial.begin(9600);
-    nfc.begin();
+    Serial.begin(9600); // Inicialização do Serial
+    mySerial.begin(9600); // Inicialização da comunicação entre os dois arduinos
+    nfc.begin(); // Inicialização da placa PN532
+    lcd.init(); // Inicialização do LCD
     pinMode(buzzer, OUTPUT);
-
     pinMode(buttonback, INPUT);
     pinMode(buttonselect, INPUT);
     pinMode(buttonnext, INPUT);
 
-    uint32_t versiondata = nfc.getFirmwareVersion();
+    uint32_t versiondata = nfc.getFirmwareVersion(); // Detecção de Presença da Placa PN53x
     if (!versiondata) {
-      Serial.print("Não encontrei a placa PN53x");
+      Serial.print("Placa PN53x não encontrada");
       while (1);
     }
-    Serial.print("Encontrei o PN5");
+    Serial.print("Placa PN53x encontrada");
     Serial.println((versiondata >> 24) & 0xFF, HEX);
     Serial.print("Firmware ver. ");
     Serial.print((versiondata >> 16) & 0xFF, DEC);
     Serial.print('.');
     Serial.println((versiondata >> 8) & 0xFF, DEC);
-
     Serial.println("Aguardando o cartão...");
-
-    lcd.init();
   }
 
   void loop(void) {
@@ -56,7 +53,7 @@
     uint8_t uidLength;
     bool igual = true;
 
-    success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
+    success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength); // Leitura do Cartão
     if (success) {
       Serial.println("Encontrei um cartão");
       Serial.print("  UID Length: ");
@@ -66,13 +63,13 @@
       nfc.PrintHex(uid, uidLength);
       Serial.println("");
       for (int x = 0; x < 4; x++) {
-        if (uid[x] != pcard[x] && uid[x] != pcphone[x]) igual = false;
+        if (uid[x] != pcard[x] && uid[x] != pcphone[x]) igual = false; // Validação do cartão
       }
       if (igual) {
         tone(8, 392);
         delay(1000);
         noTone(8);
-        selecionar();
+        selecionar(); 
       }
       delay(2000);
       lcd.noBacklight();
@@ -82,14 +79,15 @@
       Serial.flush();
     }
   }
-  void atualizar() {
+  void atualizar() { // Função de Atualizar a tela sempre que necessário
     lcd.clear();
     lcd.setCursor(5, 0);
     lcd.print("Linha:");
     lcd.setCursor(3, 1);
     lcd.print(linhas[option]);
   }
-  void selecionar() {
+  void selecionar() { // Função da Tela LCD, escolher sua linha de onibus.
+    option = 0;
     lcd.backlight();
     lcd.setCursor(5, 0);
     lcd.print("Bem-Vindo");
@@ -101,10 +99,8 @@
     delay(3000);
     atualizar();
 
-
     while (true) {
-
-      if (digitalRead(buttonback) == HIGH) {
+      if (digitalRead(buttonback) == HIGH) { // Voltar na seleção de linha
         while (digitalRead(buttonback) == HIGH) {}
         if (option != 0) {
           Serial.print("back: ");
@@ -113,7 +109,7 @@
           atualizar();
         }
       }
-      if (digitalRead(buttonnext) == HIGH) {
+      if (digitalRead(buttonnext) == HIGH) { // Avançar na seleção de linha
         while (digitalRead(buttonnext) == HIGH) {}
         if (option != 2) {
           Serial.print("next: ");
@@ -122,7 +118,7 @@
           atualizar();
         }
       }
-      if (digitalRead(buttonselect) == HIGH) {
+      if (digitalRead(buttonselect) == HIGH) { // Selecionar Linha
         while (digitalRead(buttonselect) == HIGH) {}
         Serial.print("select: ");
         linha_selecionada = option;
@@ -130,7 +126,7 @@
         lcd.setCursor(1, 0);
         lcd.print("Linha Selecionada!");
         Serial.print(linha_selecionada);
-        mySerial.write(linha_selecionada);
+        mySerial.write(linha_selecionada); // Comunicar com o segundo arduino
         break;
       }
     }
